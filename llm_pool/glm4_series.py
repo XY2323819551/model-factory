@@ -37,6 +37,7 @@ class GLMCreator:
             print(f"下载{file_type}文件时出错: {str(e)}")
             return None
 
+    # glm-4-plus
     def generate_image_description(self, prompt: str) -> str:
         """使用GLM-3-Turbo生成图片描述"""
         try:
@@ -52,6 +53,7 @@ class GLMCreator:
             print(f"生成描述时出错: {str(e)}")
             return None
 
+    # cogview-3-plus
     def text_to_image(self, prompt: str) -> tuple[Optional[str], Optional[str]]:
         """使用CogView-3生成图片，返回(url, local_path)"""
         try:
@@ -69,6 +71,7 @@ class GLMCreator:
             print(f"生成图片时出错: {str(e)}")
             return None, None
 
+    # cogvideox
     def text_to_video(self, prompt: str) -> tuple[Optional[str], Optional[str]]:
         """使用CogVideoX生成视频，返回(url, local_path)"""
         try:
@@ -116,6 +119,7 @@ class GLMCreator:
             print(f"生成视频时出错: {str(e)}")
             return None, None
 
+    # glm-4v-plus
     def vision_chat_with_video(self, video_path: str, prompt: str) -> str:
         """
         上传视频base64 + 语言指令进行对话
@@ -159,6 +163,7 @@ class GLMCreator:
             print(f"视频对话出错: {str(e)}")
             return None
 
+    # glm-4v-plus
     def vision_chat_with_image(self, image_path: str, prompt: str) -> str:
         """
         上传图片base64 + 语言指令进行对话
@@ -202,6 +207,7 @@ class GLMCreator:
             print(f"图片对话出错: {str(e)}")
             return None
 
+    # glm-4-plus
     def agent_chat(self, prompt: str) -> str:
         """
         使用glm-4-plus进行智能体对话

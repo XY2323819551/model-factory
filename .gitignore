@@ -1,6 +1,0 @@
-# 示例.gitignore内容
-__pycache__/
-.env
-.DS_Store
-*.pyc
-tmp/
