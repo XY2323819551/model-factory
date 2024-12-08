@@ -3,7 +3,7 @@ import json
 import shutil
 import asyncio
 from zhipuai import ZhipuAI
-from llm_pool.llm import get_model_response_stream, get_model_response
+from llm_pool.llm_pool import get_model_response_stream, get_model_response
 
 
 # tool1 获取文件

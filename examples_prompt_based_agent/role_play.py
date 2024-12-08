@@ -29,7 +29,7 @@ prompt="""
 当前的问题为：{prompt}\n\n请回答这个问题。
 """
 
-from llm_pool.llm import get_model_response_stream
+from llm_pool.llm_pool import get_model_response_stream
 
 async def generate_response():
     messages = [

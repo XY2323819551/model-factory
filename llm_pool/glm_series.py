@@ -6,14 +6,18 @@ import time
 import os
 from typing import Optional
 from datetime import datetime
+from dotenv import load_dotenv
 
 class GLMCreator:
-    def __init__(self, api_key: str):
-        self.api_key = api_key
-        zhipuai.api_key = api_key
-        self.client = zhipuai.ZhipuAI(api_key=api_key)
-        # 创建assets目录
-        self.assets_dir = os.path.join(os.path.dirname(__file__), 'assets')
+    def __init__(self):
+        load_dotenv(os.path.join(os.path.dirname(os.path.dirname(__file__)), '.env'))   # 加载 .env 文件
+        self.api_key = os.getenv('ZHIPUAI_API_KEY')
+        if not self.api_key:
+            raise ValueError("未找到 ZHIPUAI_API_KEY 环境变量，请在 .env 文件中设置")
+            
+        zhipuai.api_key = self.api_key
+        self.client = zhipuai.ZhipuAI(api_key=self.api_key)
+        self.assets_dir = os.path.join(os.path.dirname(__file__), 'assets')  # 创建assets目录，存放生成的文件和视频
         os.makedirs(self.assets_dir, exist_ok=True)
         
     def _download_file(self, url: str, file_type: str) -> Optional[str]:
@@ -200,21 +204,22 @@ class GLMCreator:
 
     def agent_chat(self, prompt: str) -> str:
         """
-        使用GLM-4 AllTools进行智能体对话
+        使用glm-4-plus进行智能体对话
         Args:
             prompt: 用户输入的问题
         Returns:
             模型回答
         """
         try:
-            response = self.client.chat.completions.create(
-                model="glm-4-plus",
-                messages=[
+            messages=[
                     {
                         "role": "user",
                         "content": prompt
                     }
-                ],
+                ]
+            response = self.client.chat.completions.create(
+                model="glm-4-plus",  # glm-4-alltools、glm-4-plus
+                messages=messages,
                 tools=[
                     {
                         "type": "function",
@@ -287,23 +292,15 @@ class GLMCreator:
                         })
                     
                     # 继续对话，将工具返回结果发送给模型
+                    messages.extend(tool_responses)
                     second_response = self.client.chat.completions.create(
                         model="glm-4-plus",
-                        messages=[
-                            {
-                                "role": "user",
-                                "content": prompt
-                            },
-                            message,
-                            *tool_responses
-                        ]
+                        messages=messages
                     )
-                    
                     return second_response.choices[0].message.content
                 else:
                     # 直接返回模型回答
                     return message.content
-                    
             return None
             
         except Exception as e:
@@ -338,7 +335,7 @@ class GLMCreator:
 
 def main():
     # 使用示例
-    creator = GLMCreator("352894d8c48fd2e0b0547b3159cca22a.ZJ84NRbCzMiDaxMa")
+    creator = GLMCreator("")
     
     # # Step 1: 生成图片描述
     # prompt = "一只可爱的猫咪在阳光下玩耍" 
@@ -357,21 +354,21 @@ def main():
     #     print(f"视频保存路径：{video_path}")
         
     #     # Step 4: 测试视频对话
-    #     # video_path = "/Users/zhangxiaoyu/Desktop/WorkSpace/rl/llm_agent/agent_pattern/glm_series/assets/mp4_20241109_222519.mp4"  # 替换为实际视频路径
+    #     # video_path = "xxx.mp4"  # 替换为实际视频路径
     #     video_prompt = "请描述这个视频中发生了什么？"
     #     video_response = creator.vision_chat_with_video(video_path, video_prompt)
     #     print(f"视频对话响应：{video_response}")
         
     #     # Step 5: 测试图片对话
-    #     # image_path = "/Users/zhangxiaoyu/Desktop/WorkSpace/rl/llm_agent/agent_pattern/glm_series/assets/png_20241108_153516.png"  # 替换为实际图片路径
+    #     # image_path = "xxx.png"  # 替换为实际图片路径
     #     image_prompt = "这张图片中有什么内容？"
     #     image_response = creator.vision_chat_with_image(image_path, image_prompt)
     #     print(f"图片对话响应：{image_response}")
 
-    # 测试智能体对话
+    # 测试 glm-4-plus 的函数调用能力
     agent_prompt = "北京今天的天气怎么样？顺便帮我查询一下阿里巴巴的股票价格。"
     agent_response = creator.agent_chat(agent_prompt)
-    print(f"\n智能体对话测试：")
+    print(f"\n(with function call)对话测试：")
     print(f"问题：{agent_prompt}")
     print(f"回答：{agent_response}")
 

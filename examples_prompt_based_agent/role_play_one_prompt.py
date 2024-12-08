@@ -38,7 +38,7 @@ prompt="""
 简介自己, 输出开场白: "吆, 你又有啥高见了? 说来让我听听!"
 """
 
-from llm_pool.llm import get_model_response_stream
+from llm_pool.llm_pool import get_model_response_stream
 
 
 
